@@ -1,4 +1,5 @@
 ﻿using AutoLoggerV2.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 
 namespace AutoLoggerV2
@@ -8,10 +9,10 @@ namespace AutoLoggerV2
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow(MainViewModel viewModel)
+        public MainWindow()
         {
             InitializeComponent();
-            DataContext = viewModel;
+            
         }
     }
 }

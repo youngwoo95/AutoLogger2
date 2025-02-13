@@ -1,5 +1,7 @@
 ﻿using AutoLoggerV2.Commands;
+using AutoLoggerV2.Services;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Windows.Input;
 
 namespace AutoLoggerV2.ViewModels
@@ -32,19 +34,20 @@ namespace AutoLoggerV2.ViewModels
                 }
             }
         }
-
-        public MainViewModel(IServiceProvider serviceProvider)
+        public INavigationService NavigationService { get; }
+        public MainViewModel(INavigationService navigationService)
         {
-            CurrentViewModel = serviceProvider.GetRequiredService<HomeViewModel>();
+            NavigationService = navigationService;
 
+            // 예시: ShowHomeCommand도 추가 가능
             ShowHomeCommand = new RelayCommand<object>(_ =>
             {
-                CurrentViewModel = serviceProvider.GetRequiredService<HomeViewModel>();
+                NavigationService.NavigateTo<HomeViewModel>();
             });
 
             ShowLockCommand = new RelayCommand<object>(_ =>
             {
-                CurrentViewModel = serviceProvider.GetRequiredService<LockViewModel>();
+                NavigationService.NavigateTo<LockViewModel>();
             });
         }
 

@@ -1,4 +1,5 @@
-﻿using AutoLoggerV2.ViewModels;
+﻿using AutoLoggerV2.Services;
+using AutoLoggerV2.ViewModels;
 using AutoLoggerV2.Views;
 using Microsoft.Extensions.DependencyInjection;
 using System.Configuration;
@@ -23,9 +24,10 @@ namespace AutoLoggerV2
             ConfigureServices();
 
             var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
+            // DataContext를 MainViewModel로 설정
+            mainWindow.DataContext = ServiceProvider.GetRequiredService<MainViewModel>();
             Application.Current.MainWindow = mainWindow;
             mainWindow.Show();
-
         }
 
         public void ConfigureServices()
@@ -48,6 +50,7 @@ namespace AutoLoggerV2
             Services.AddTransient<LockViewModel>();
 
             // 서비스 등록
+            Services.AddSingleton<INavigationService, NavigationService>();
 
             // 추가 서비스나 기타 의존성이 있다면 여기서 등록
             ServiceProvider = Services.BuildServiceProvider();

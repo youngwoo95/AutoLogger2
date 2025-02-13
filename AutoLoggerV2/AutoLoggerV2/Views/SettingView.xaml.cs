@@ -10,6 +10,7 @@ namespace AutoLoggerV2.Views
         public SettingView()
         {
             InitializeComponent();
+            Console.WriteLine("세팅뷰호출");
         }
     }
 }

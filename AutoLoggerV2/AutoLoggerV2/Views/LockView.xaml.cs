@@ -10,6 +10,7 @@ namespace AutoLoggerV2.Views
         public LockView()
         {
             InitializeComponent();
+            Console.WriteLine("락뷰호출");
         }
     }
 }

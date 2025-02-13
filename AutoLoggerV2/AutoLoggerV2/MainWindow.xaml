@@ -94,8 +94,7 @@
         </Grid>
         
         <!-- 우측 변경화면 -->
-        <!--
-        <ContentControl Grid.Column="1" Content="{Binding CurrentViewModel}">
+        <ContentControl Grid.Column="1" Content="{Binding NavigationService.CurrentViewModel}">
             <ContentControl.Resources>
                 <DataTemplate DataType="{x:Type vm:HomeViewModel}">
                     <views:HomeView/>
@@ -104,10 +103,6 @@
                     <views:LockView/>
                 </DataTemplate>
             </ContentControl.Resources>
-        </ContentControl>
-        -->
-        <ContentControl Grid.Column="1" Content="{Binding CurrentViewModel}">
-           
         </ContentControl>
     </Grid>
 </Window>
