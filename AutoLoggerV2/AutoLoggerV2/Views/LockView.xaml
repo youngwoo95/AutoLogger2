@@ -1,0 +1,122 @@
+﻿<UserControl x:Class="AutoLoggerV2.Views.LockView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AutoLoggerV2.Views"
+             xmlns:conv="clr-namespace:AutoLoggerV2.Converters"
+             xmlns:helpers="clr-namespace:AutoLoggerV2.Helpers"
+             xmlns:vm="clr-namespace:AutoLoggerV2.ViewModels"
+             xmlns:views="clr-namespace:AutoLoggerV2.Views"
+             mc:Ignorable="d"
+             Background="#292929"
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <!-- Password hintBox Visibility -->
+        <conv:EmptyToVisibilityConverter x:Key="EmptyToVisibilityConverter"/>
+        
+        <!-- 확인 버튼 Style -->
+        <Style x:Key="SubmitStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#323c69"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="10, 5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="5"
+                                BorderThickness="0"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              RecognizesAccessKey="True"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <!-- 마우스 오버 시 배경색 변경 -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#223377"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <!-- 취소 버튼 Style -->
+        <Style x:Key="CancelStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#c9161c"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="10, 5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="5"
+                                BorderThickness="0"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              RecognizesAccessKey="True"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <!-- 마우스 오버 시 배경색 변경 -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="Crimson"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <UserControl.InputBindings>
+        <KeyBinding Key="Enter" Command="{Binding SubmitCommand}"/>
+    </UserControl.InputBindings>
+
+    <Grid>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="300">
+            <Grid>
+                <PasswordBox 
+                    helpers:PasswordBoxAssistant.BindPassword="True"
+                    helpers:PasswordBoxAssistant.BoundPassword="{Binding LoginPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    Background="#2D2D2D"
+                    Foreground="White"
+                    VerticalAlignment="Center"
+                    BorderThickness="0 0 0 1"
+                    Padding="5"
+                    Margin="0,10,0,10"/>
+
+                <!-- 비밀번호 힌트 표시를 위해 Password가 비어있을 때 Visibility를 바인딩하는 예 -->
+                <TextBlock Text="비밀번호를 입력하세요"
+                            Foreground="LightGray"
+                            Margin="7,15,0,10"
+                            IsHitTestVisible ="False"
+                    Visibility="{Binding LoginPassword, Converter={StaticResource EmptyToVisibilityConverter}}"/>
+            </Grid>
+            <Grid>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" Content="확인" Height="35" Command="{Binding SubmitCommand}"
+                        Style="{StaticResource SubmitStyle}"/>
+                    <Button Grid.Column="1" Content="취소" Height="35" Command="{Binding CancelCommand}"
+                        Style="{StaticResource CancelStyle}"/>
+                </Grid>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</UserControl>
