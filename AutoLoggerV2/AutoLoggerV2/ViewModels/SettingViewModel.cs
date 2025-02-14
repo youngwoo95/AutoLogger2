@@ -2,7 +2,6 @@
 using AutoLoggerV2.Services.Common;
 using Microsoft.Win32;
 using Newtonsoft.Json.Linq;
-using System.Diagnostics;
 using System.IO;
 using System.Windows.Input;
 
@@ -160,6 +159,8 @@ namespace AutoLoggerV2.ViewModels
         {
             this.AppSettings = _appSettings;
 
+            FileLoad();
+
             // 초기화는 숨김
             _showPassword = false;
             ToggleShowPasswordCommand = new RelayCommand<object>(_ => 
@@ -196,6 +197,25 @@ namespace AutoLoggerV2.ViewModels
             Console.WriteLine($"저장값 : {jobj.ToString()}");
         }
 
+        private void FileLoad()
+        {
+            if(File.Exists(AppSettings.SETTINGPATH))
+            {
+                using (StreamReader reader = File.OpenText(AppSettings.SETTINGPATH))
+                {
+                    string str = reader.ReadToEnd();
+
+                    var jobj = JObject.Parse(str);
+                    FolderPath = (string)jobj["PATH"];
+                    DBIP = (string)jobj["DBIP"];
+                    DBPORT = (string)jobj["DBPORT"];
+                    DBID = (string)jobj["DBID"];
+                    DBPassword = (string)jobj["DBPW"];
+                    DBNAME = (string)jobj["DBNAME"];
+                }
+            }
+        }
+
         // 파일경로 Search
         private void FilePathSearch()
         {
@@ -203,10 +223,10 @@ namespace AutoLoggerV2.ViewModels
             if (di.ShowDialog() is true)
             {
                 FolderPath = di.FolderName;
+#if DEBUG
                 Console.WriteLine(FolderPath);
+#endif
             }
         }
-
-    
     }
 }
