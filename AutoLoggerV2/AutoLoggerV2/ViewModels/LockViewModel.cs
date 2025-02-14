@@ -31,6 +31,7 @@ namespace AutoLoggerV2.ViewModels
         {
             _navigationService = navigationService;
 
+
             SubmitCommand = new RelayCommand<object>(_ => Commit());
             CancelCommand = new RelayCommand<object>(_ =>
             {
@@ -38,6 +39,8 @@ namespace AutoLoggerV2.ViewModels
                 _navigationService.NavigateTo<HomeViewModel>();
             });
         }
+
+
 
         private void Commit()
         {

@@ -1,6 +1,7 @@
 ﻿using AutoLoggerV2.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace AutoLoggerV2.Services
 {
@@ -15,10 +16,15 @@ namespace AutoLoggerV2.Services
                 if (_currentViewModel != value)
                 {
                     _currentViewModel = value;
-                    OnPropertyChanged(nameof(CurrentViewModel));
+                    CurrentViewModelChanged?.Invoke(this, EventArgs.Empty);
+                    //OnPropertyChanged(nameof(CurrentViewModel));
+                    OnPropertyChanged();
                 }
             }
         }
+
+        public event EventHandler CurrentViewModelChanged;
+
 
         private readonly IServiceProvider _serviceProvider;
         public NavigationService(IServiceProvider serviceProvider)
@@ -34,8 +40,11 @@ namespace AutoLoggerV2.Services
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(string propertyName) =>
+
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 
 }

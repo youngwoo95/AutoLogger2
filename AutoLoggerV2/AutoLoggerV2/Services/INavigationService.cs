@@ -7,5 +7,7 @@ namespace AutoLoggerV2.Services
     {
         ViewModelBase CurrentViewModel { get; set; }
         void NavigateTo<TViewModel>() where TViewModel : ViewModelBase;
+
+        event EventHandler CurrentViewModelChanged;
     }
 }
