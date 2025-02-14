@@ -10,7 +10,11 @@ namespace AutoLoggerV2.Helpers
 {
     public static class PasswordBoxAssistant
     {
-        public static readonly DependencyProperty BoundPasswordProperty = DependencyProperty.RegisterAttached("BoundPassword", typeof(string), typeof(PasswordBoxAssistant), new FrameworkPropertyMetadata(string.Empty, OnBoundPasswordChanged));
+        public static readonly DependencyProperty BoundPasswordProperty = DependencyProperty.RegisterAttached(
+            "BoundPassword",
+            typeof(string),
+            typeof(PasswordBoxAssistant),
+            new FrameworkPropertyMetadata(string.Empty, OnBoundPasswordChanged));
 
         public static string GetBoundPassword(DependencyObject dp)
         {
@@ -58,10 +62,13 @@ namespace AutoLoggerV2.Helpers
                 if (wasBound)
                 {
                     passwordBox.PasswordChanged -= PasswordBox_PasswordChanged;
+                    passwordBox.IsVisibleChanged -= PasswordBox_IsVisibleChanged;
                 }
                 if (needToBind)
                 {
                     passwordBox.PasswordChanged += PasswordBox_PasswordChanged;
+                    // 추가: Visibility 변화 시 Binding 업데이트를 위해 이벤트 핸들러 등록
+                    passwordBox.IsVisibleChanged += PasswordBox_IsVisibleChanged;
                 }
             }
         }
@@ -83,6 +90,16 @@ namespace AutoLoggerV2.Helpers
                 SetIsUpdating(passwordBox, true);
                 SetBoundPassword(passwordBox, passwordBox.Password);
                 SetIsUpdating(passwordBox, false);
+            }
+        }
+
+        // 추가된 핸들러: PasswordBox의 Visibility가 변경될 때 Binding 업데이트를 강제함.
+        private static void PasswordBox_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (sender is PasswordBox passwordBox)
+            {
+                var binding = passwordBox.GetBindingExpression(BoundPasswordProperty);
+                binding?.UpdateSource();
             }
         }
 

@@ -12,5 +12,7 @@ namespace AutoLoggerV2.Views
             InitializeComponent();
             Console.WriteLine("세팅뷰호출");
         }
+
+   
     }
 }

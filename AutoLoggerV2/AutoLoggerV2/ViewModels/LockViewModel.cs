@@ -1,8 +1,7 @@
 ﻿using AutoLoggerV2.Commands;
 using AutoLoggerV2.Services;
-using Microsoft.Extensions.DependencyInjection;
+using System.Windows;
 using System.Windows.Input;
-using System.Windows.Navigation;
 
 namespace AutoLoggerV2.ViewModels
 {
@@ -27,6 +26,7 @@ namespace AutoLoggerV2.ViewModels
         public ICommand SubmitCommand { get; }
         public ICommand CancelCommand { get; }
 
+        
         public LockViewModel(INavigationService navigationService)
         {
             _navigationService = navigationService;
@@ -40,12 +40,19 @@ namespace AutoLoggerV2.ViewModels
             });
         }
 
-
-
+        /// <summary>
+        /// 확인버튼
+        /// </summary>
         private void Commit()
         {
-            Console.WriteLine("Commit 실행");
-            Console.WriteLine(LoginPassword);
+            if (LoginPassword.Equals("stec2025!"))
+            {
+                _navigationService.NavigateTo<SettingViewModel>();
+            }
+            else
+            {
+                MessageBox.Show("비밀번호아님");
+            }
         }
     }
 

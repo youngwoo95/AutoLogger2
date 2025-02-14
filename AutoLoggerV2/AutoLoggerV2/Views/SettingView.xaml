@@ -4,9 +4,315 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:AutoLoggerV2.Views"
+             xmlns:conv="clr-namespace:AutoLoggerV2.Converters"
+             xmlns:helpers="clr-namespace:AutoLoggerV2.Helpers"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="800" d:DesignWidth="1200">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <conv:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
+        <conv:ShowPasswordButtonContentConverter x:Key="ShowPasswordButtonContentConverter"/>
+
+        <!-- 스타일 -->
+        <!-- 검색 / 숨김&보임 버튼 스타일 -->
+        <Style x:Key="CheckStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#323c69"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="5"
+                                BorderThickness="0"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              RecognizesAccessKey="True"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <!-- 마우스 오버 시 배경색 변경 -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#223377"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 저장 버튼 스타일-->
+        <Style x:Key="SaveStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#623f8c"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="5"
+                                BorderThickness="0"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              RecognizesAccessKey="True"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <!-- 마우스 오버 시 배경색 변경 -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="Purple"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 연결확인 버튼 스타일 -->
+        <Style x:Key="ConnCheckStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#2a6940"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="5"
+                                BorderThickness="0"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              RecognizesAccessKey="True"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <!-- 마우스 오버 시 배경색 변경 -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="Green"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </UserControl.Resources>
+
     <Grid>
-            
+        <StackPanel>
+            <!-- 로그파일 경로 -->
+            <TextBlock Text="파일 경로" Foreground="White" Margin="0 10 0 0" FontWeight="Bold" FontSize="13"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="100"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Text="{Binding FolderPath, UpdateSourceTrigger=PropertyChanged}"
+                         Grid.Column="0"
+                         Background="#2D2D2D"
+                         Foreground="White"
+                         VerticalAlignment="Center"
+                         BorderThickness="0 0 0 1"
+                         BorderBrush="White"
+                         Padding="5"
+                         Margin="0,10,0,10"/>
+
+                <!-- 토글 버튼 -->
+                <Button Grid.Column="1"
+                    Style="{StaticResource CheckStyle}"
+                    Content="검색"
+                    Command="{Binding SearchCommand}"
+                    VerticalAlignment="Center"
+                    Margin="5,0,0,0" Height="30"/>
+            </Grid>
+
+            <!-- DB IP -->
+            <TextBlock Text="데이터베이스 주소" Foreground="White" Margin="0 10 0 0" FontWeight="Bold" FontSize="13"/>
+            <Grid>
+                <TextBox
+                    x:Name="txtIP"
+                    Text="{Binding DBIP, UpdateSourceTrigger=PropertyChanged}"
+                    Background="#2D2D2D"
+                    Foreground="White"
+                    VerticalAlignment="Center"
+                    BorderThickness="0 0 0 1"
+                    BorderBrush="White"
+                    Padding="5"
+                    Margin="0,10,0,10"/>
+                <TextBlock Text="데이터베이스 주소를 입력해주세요"
+                           Foreground="White"
+                           Margin="7,15,0,10"
+                           IsHitTestVisible="False">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <!-- 기본은 보이지 않음 -->
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Text, ElementName=txtIP}" Value="">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Grid>
+            <!-- DB PORT -->
+            <TextBlock Text="포트" Foreground="White" Margin="0 10 0 0" FontWeight="Bold" FontSize="13"/>
+            <Grid>
+                <TextBox
+                    x:Name="txtPORT"
+                    Text="{Binding DBPORT, UpdateSourceTrigger=PropertyChanged}"
+                    Background="#2D2D2D"
+                    Foreground="White"
+                    VerticalAlignment="Center"
+                    BorderThickness="0 0 0 1"
+                    BorderBrush="White"
+                    Padding="5"
+                    Margin="0, 10, 0, 10"/>
+                <TextBlock Text="데이터베이스 포트를 입력해주세요"
+                           Foreground="White"
+                           Margin="7,15,0,10"
+                           IsHitTestVisible="False">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <!-- 기본은 보이지 않음 -->
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Text, ElementName=txtPORT}" Value="">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Grid>
+            <!-- DB ID -->
+            <TextBlock Text="아이디" Foreground="White" Margin="0 10 0 0" FontWeight="Bold" FontSize="13"/>
+            <Grid>
+                <TextBox
+                    x:Name="txtID"
+                    Text="{Binding DBID, UpdateSourceTrigger=PropertyChanged}"
+                    Background="#2D2D2D"
+                    Foreground="White"
+                    VerticalAlignment="Center"
+                    BorderThickness="0 0 0 1"
+                    BorderBrush="White"
+                    Padding="5"
+                    Margin="0,10,0,10"/>
+                <TextBlock Text="데이터베이스 아이디를 입력해주세요"
+                           Foreground="White"
+                           Margin="7,15,0,10"
+                           IsHitTestVisible="False">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <!-- 기본은 보이지 않음 -->
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Text, ElementName=txtID}" Value="">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Grid>
+
+            <!-- DB PW -->
+            <TextBlock Text="비밀번호" Foreground="White" Margin="0 10 0 0" FontWeight="Bold" FontSize="13"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="100"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="0">
+                    <!-- 마스킹된 PasswordBox (ShowPassword가 false일 때 보임) -->
+                    <PasswordBox x:Name="pwdBox"
+                     helpers:PasswordBoxAssistant.BindPassword="True"
+                     helpers:PasswordBoxAssistant.BoundPassword="{Binding DBPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     Background="#2D2D2D"
+                     Foreground="White"
+                     BorderThickness="0 0 0 1"
+                     BorderBrush="White"
+                     Padding="5"
+                     Visibility="{Binding ShowPassword, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+
+                    <!-- 평문 TextBox (ShowPassword가 true일 때 보임) -->
+                    <TextBox x:Name="txtPassword"
+                         Text="{Binding DBPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         Background="#2D2D2D"
+                         Foreground="White"
+                         BorderThickness="0 0 0 1"
+                         BorderBrush="White"
+                         Padding="5"
+                         Visibility="{Binding ShowPassword, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                </Grid>
+
+                <Grid Grid.Column="1">
+                    <!-- 토글 버튼 -->
+                    <Button Grid.Column="1"
+                            Style="{StaticResource CheckStyle}"
+                            Content="{Binding ShowPassword, Converter={StaticResource ShowPasswordButtonContentConverter}}"
+                            Command="{Binding ToggleShowPasswordCommand}"
+                            VerticalAlignment="Center"
+                            Margin="5,0,0,0" Height="30"/>
+                </Grid>
+            </Grid>
+
+            <!-- 테이블 명 -->
+            <TextBlock Text="데이터베이스 이름" Foreground="White" Margin="0 10 0 0" FontWeight="Bold" FontSize="13"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1200*"/>
+                    <ColumnDefinition Width="719*"/>
+                </Grid.ColumnDefinitions>
+                <TextBox
+                    x:Name="txtTBNAME"
+                    Text="{Binding DBNAME, UpdateSourceTrigger=PropertyChanged}"
+                    Background="#2D2D2D"
+                    Foreground="White"
+                    VerticalAlignment="Center"
+                    BorderThickness="0 0 0 1"
+                    BorderBrush="White"
+                    Padding="5"/>
+                <TextBlock Text="데이터베이스 이름을 입력해주세요"
+                           Foreground="White"
+                           Margin="7,15,0,10"
+                           IsHitTestVisible="False">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <!-- 기본은 보이지 않음 -->
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Text, ElementName=txtTBNAME}" Value="">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Grid>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="연결확인" Style="{StaticResource ConnCheckStyle}" Width="100" Height="30"/>
+                <Button Content="저장" Style="{StaticResource SaveStyle}" Width="100" Height="30" Command="{Binding SaveCommand}"/>
+            </StackPanel>
+        </StackPanel>
+
     </Grid>
 </UserControl>

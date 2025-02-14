@@ -1,4 +1,5 @@
 ﻿using AutoLoggerV2.Services;
+using AutoLoggerV2.Services.Common;
 using AutoLoggerV2.ViewModels;
 using AutoLoggerV2.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -51,6 +52,8 @@ namespace AutoLoggerV2
 
             // 서비스 등록
             Services.AddSingleton<INavigationService, NavigationService>();
+            Services.AddSingleton<IAppSettings, AppSettings>();
+
 
             // 추가 서비스나 기타 의존성이 있다면 여기서 등록
             ServiceProvider = Services.BuildServiceProvider();

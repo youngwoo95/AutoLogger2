@@ -38,11 +38,8 @@ namespace AutoLoggerV2.ViewModels
                         _isHomeSelected = false;
                     }
                 }
-
             }
         }
-
-
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
