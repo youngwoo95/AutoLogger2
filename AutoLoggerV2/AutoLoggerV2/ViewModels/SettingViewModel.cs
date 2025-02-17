@@ -1,7 +1,10 @@
 ﻿using AutoLoggerV2.Commands;
 using AutoLoggerV2.Services.Common;
+using AutoLoggerV2.Services.Logger;
 using Microsoft.Win32;
 using Newtonsoft.Json.Linq;
+using Oracle.ManagedDataAccess.Client;
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Input;
 
@@ -27,11 +30,11 @@ namespace AutoLoggerV2.ViewModels
         }
 
         #region 세팅파일 정보
-        private string _folderpath;
+        private string? _folderpath;
         /// <summary>
         /// 폴더 경로
         /// </summary>
-        public string FolderPath
+        public string? FolderPath
         {
             get => _folderpath;
             set
@@ -44,11 +47,11 @@ namespace AutoLoggerV2.ViewModels
             }
         }
 
-        private string _dbip;
+        private string? _dbip;
         /// <summary>
         /// 데이터베이스 IP
         /// </summary>
-        public string DBIP
+        public string? DBIP
         {
             get => _dbip;
             set
@@ -61,11 +64,11 @@ namespace AutoLoggerV2.ViewModels
             }
         }
 
-        private string _dbport;
+        private string? _dbport;
         /// <summary>
         /// 데이터베이스 PORT
         /// </summary>
-        public string DBPORT
+        public string? DBPORT
         {
             get => _dbport;
             set
@@ -79,11 +82,11 @@ namespace AutoLoggerV2.ViewModels
         }
 
         
-        private string _dbid;
+        private string? _dbid;
         /// <summary>
         /// 데이터베이스 ID
         /// </summary>
-        public string DBID
+        public string? DBID
         {
             get => _dbid;
             set
@@ -96,11 +99,11 @@ namespace AutoLoggerV2.ViewModels
             }
         }
 
-        private string _dbpassword;
+        private string? _dbpassword;
         /// <summary>
         /// 데이터베이스 PW
         /// </summary>
-        public string DBPassword
+        public string? DBPassword
         {
             get => _dbpassword;
             set
@@ -113,11 +116,11 @@ namespace AutoLoggerV2.ViewModels
             }
         }
 
-        private string _dbname;
+        private string? _dbname;
         /// <summary>
         /// 데이터베이스 테이블명
         /// </summary>
-        public string DBNAME
+        public string? DBNAME
         {
             get => _dbname;
             set
@@ -148,16 +151,27 @@ namespace AutoLoggerV2.ViewModels
         /// 저장버튼
         /// </summary>
         public ICommand SaveCommand { get; }
+
+        /// <summary>
+        /// 연결 확인버튼
+        /// </summary>
+        public ICommand ConnCheckCommand { get; }
         #endregion
 
         /// <summary>
         /// 상수파일 주입
         /// </summary>
         private readonly IAppSettings AppSettings;
+        
+        /// <summary>
+        /// 로그 의존성
+        /// </summary>
+        private readonly ILoggers Loggers;
 
-        public SettingViewModel(IAppSettings _appSettings)
+        public SettingViewModel(IAppSettings _appSettings, ILoggers _loggers)
         {
             this.AppSettings = _appSettings;
+            this.Loggers = _loggers;
 
             FileLoad();
 
@@ -170,8 +184,43 @@ namespace AutoLoggerV2.ViewModels
             });
             SearchCommand = new RelayCommand<object>(_ => FilePathSearch());
             SaveCommand = new RelayCommand<object>(_ => FileSave()); // 설정파일 저장
+            ConnCheckCommand = new RelayCommand<object>(async _ => await ConnCheck()); // 연결확인
 
-            Console.WriteLine("세팅뷰");
+            Debug.WriteLine(typeof(SettingViewModel));
+        }
+
+        private void FileLoad()
+        {
+            if (File.Exists(AppSettings.SETTINGPATH))
+            {
+                using (StreamReader reader = File.OpenText(AppSettings.SETTINGPATH))
+                {
+                    string str = reader.ReadToEnd();
+
+                    var jobj = JObject.Parse(str);
+                    FolderPath = (string)jobj["PATH"];
+                    DBIP = (string)jobj["DBIP"];
+                    DBPORT = (string)jobj["DBPORT"];
+                    DBID = (string)jobj["DBID"];
+                    DBPassword = (string)jobj["DBPW"];
+                    DBNAME = (string)jobj["DBNAME"];
+                }
+            }
+        }
+
+        /// <summary>
+        /// 파일경로 Search
+        /// </summary>
+        private void FilePathSearch()
+        {
+            var di = new OpenFolderDialog();
+            if (di.ShowDialog() is true)
+            {
+                FolderPath = di.FolderName;
+#if DEBUG
+                Console.WriteLine(FolderPath);
+#endif
+            }
         }
 
         /// <summary>
@@ -193,39 +242,38 @@ namespace AutoLoggerV2.ViewModels
             }
             File.WriteAllText(AppSettings.SETTINGPATH, jobj.ToString());
 
+            /*
+             DB 경로 변경
+             */
+
+            CommDATA.OK_MESSAGE("저장이 완료되었습니다");
+            
+
             Console.WriteLine($"세팅파일 경로:{AppSettings.SETTINGPATH}");
             Console.WriteLine($"저장값 : {jobj.ToString()}");
         }
 
-        private void FileLoad()
+        /// <summary>
+        /// 연결확인
+        /// </summary>
+        private async Task ConnCheck()
         {
-            if(File.Exists(AppSettings.SETTINGPATH))
+            /*
+              DB경로확인 후 Check
+             */
+            string connStr = $"Data Source=(DESCRIPTION=(ADDRESS = (PROTOCOL = TCP)(HOST = {DBIP})(PORT = {DBPORT})) (CONNECT_DATA=(SERVER = DBDICATED) (SERVICE_NAME = {DBNAME})));User Id={DBID};Password={DBPassword}";
+
+            using (OracleConnection conn = new OracleConnection(connStr))
             {
-                using (StreamReader reader = File.OpenText(AppSettings.SETTINGPATH))
+                try
                 {
-                    string str = reader.ReadToEnd();
-
-                    var jobj = JObject.Parse(str);
-                    FolderPath = (string)jobj["PATH"];
-                    DBIP = (string)jobj["DBIP"];
-                    DBPORT = (string)jobj["DBPORT"];
-                    DBID = (string)jobj["DBID"];
-                    DBPassword = (string)jobj["DBPW"];
-                    DBNAME = (string)jobj["DBNAME"];
+                    await conn.OpenAsync();
+                    await Loggers.INFOMEssage($"데이터베이스 연결성공 {connStr}");
                 }
-            }
-        }
-
-        // 파일경로 Search
-        private void FilePathSearch()
-        {
-            var di = new OpenFolderDialog();
-            if (di.ShowDialog() is true)
-            {
-                FolderPath = di.FolderName;
-#if DEBUG
-                Console.WriteLine(FolderPath);
-#endif
+                catch(Exception ex)
+                {
+                    await Loggers.ERRORMessage($"데이터베이스 연결실패 {ex.ToString()}");
+                }
             }
         }
     }

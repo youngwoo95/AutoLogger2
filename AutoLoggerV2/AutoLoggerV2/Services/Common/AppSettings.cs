@@ -1,4 +1,6 @@
-﻿namespace AutoLoggerV2.Services.Common
+﻿using System.Windows;
+
+namespace AutoLoggerV2.Services.Common
 {
     public class AppSettings : IAppSettings
     {
@@ -8,5 +10,7 @@
         public string ROOT => AppDomain.CurrentDomain.BaseDirectory;
 
         public string SETTINGPATH => $"{ROOT}\\Settings.json";
+
+        
     }
 }

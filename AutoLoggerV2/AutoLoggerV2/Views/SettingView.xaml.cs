@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Diagnostics;
+using System.Windows.Controls;
 
 namespace AutoLoggerV2.Views
 {
@@ -10,9 +11,7 @@ namespace AutoLoggerV2.Views
         public SettingView()
         {
             InitializeComponent();
-            Console.WriteLine("세팅뷰호출");
+            Debug.WriteLine(typeof(SettingView));
         }
-
-   
     }
 }

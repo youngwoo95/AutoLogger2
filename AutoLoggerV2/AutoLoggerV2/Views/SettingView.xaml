@@ -309,7 +309,7 @@
             </Grid>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="연결확인" Style="{StaticResource ConnCheckStyle}" Width="100" Height="30"/>
+                <Button Content="연결확인" Style="{StaticResource ConnCheckStyle}" Width="100" Height="30" Command="{Binding ConnCheckCommand}"/>
                 <Button Content="저장" Style="{StaticResource SaveStyle}" Width="100" Height="30" Command="{Binding SaveCommand}"/>
             </StackPanel>
         </StackPanel>

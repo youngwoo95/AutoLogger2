@@ -11,5 +11,6 @@
         /// 설정파일 경로
         /// </summary>
         string SETTINGPATH { get; }
+
     }
 }
