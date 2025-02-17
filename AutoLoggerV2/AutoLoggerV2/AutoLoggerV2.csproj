@@ -9,17 +9,33 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="ico\Attendance.PNG" />
+    <None Remove="ico\door.PNG" />
     <None Remove="ico\home.PNG" />
     <None Remove="ico\logo.png" />
+    <None Remove="ico\Restaurant.PNG" />
+    <None Remove="ico\Security.PNG" />
     <None Remove="ico\setting.PNG" />
     <None Remove="ico\Stec_Logo.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="ico\Attendance.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ico\door.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="ico\home.PNG">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ico\logo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ico\Restaurant.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ico\Security.PNG">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ico\setting.PNG">

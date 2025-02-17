@@ -4,7 +4,7 @@ namespace AutoLoggerV2.Services.Common
 {
     public class CommDATA
     {
-        
+        public static string LockPassword = "stec2025!";
 
         /// <summary>
         /// OK MESSAGE

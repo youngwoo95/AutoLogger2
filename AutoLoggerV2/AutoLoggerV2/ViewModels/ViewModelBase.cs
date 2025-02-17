@@ -41,6 +41,111 @@ namespace AutoLoggerV2.ViewModels
             }
         }
 
+        #region 세팅파일 정보
+        private string? _folderpath;
+        /// <summary>
+        /// 폴더 경로
+        /// </summary>
+        public string? FolderPath
+        {
+            get => _folderpath;
+            set
+            {
+                if (_folderpath != value)
+                {
+                    _folderpath = value;
+                    OnPropertyChanged(nameof(FolderPath));
+                }
+            }
+        }
+
+        private string? _dbip;
+        /// <summary>
+        /// 데이터베이스 IP
+        /// </summary>
+        public string? DBIP
+        {
+            get => _dbip;
+            set
+            {
+                if (_dbip != value)
+                {
+                    _dbip = value;
+                    OnPropertyChanged(nameof(DBIP));
+                }
+            }
+        }
+
+        private string? _dbport;
+        /// <summary>
+        /// 데이터베이스 PORT
+        /// </summary>
+        public string? DBPORT
+        {
+            get => _dbport;
+            set
+            {
+                if (_dbport != value)
+                {
+                    _dbport = value;
+                    OnPropertyChanged(nameof(DBPORT));
+                }
+            }
+        }
+
+
+        private string? _dbid;
+        /// <summary>
+        /// 데이터베이스 ID
+        /// </summary>
+        public string? DBID
+        {
+            get => _dbid;
+            set
+            {
+                if (_dbid != value)
+                {
+                    _dbid = value;
+                    OnPropertyChanged(nameof(DBID));
+                }
+            }
+        }
+
+        private string? _dbpassword;
+        /// <summary>
+        /// 데이터베이스 PW
+        /// </summary>
+        public string? DBPassword
+        {
+            get => _dbpassword;
+            set
+            {
+                if (_dbpassword != value)
+                {
+                    _dbpassword = value;
+                    OnPropertyChanged(nameof(DBPassword));
+                }
+            }
+        }
+
+        private string? _dbname;
+        /// <summary>
+        /// 데이터베이스 테이블명
+        /// </summary>
+        public string? DBNAME
+        {
+            get => _dbname;
+            set
+            {
+                if (_dbname != value)
+                {
+                    _dbname = value;
+                    OnPropertyChanged(nameof(DBNAME));
+                }
+            }
+        }
+        #endregion
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>

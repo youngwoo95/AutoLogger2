@@ -8,7 +8,432 @@
              Background="#292929"
              d:DesignHeight="450" d:DesignWidth="800">
 
-    <Grid>
-        <TextBlock Text="홈뷰" Foreground="White"/>
+    <UserControl.Resources>
+        <!-- DatePickerTextBox 스타일 오버라이드: 워터마크 제거 및 텍스트 중앙 정렬 -->
+        <Style TargetType="{x:Type DatePickerTextBox}">
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type DatePickerTextBox}">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <!-- PART_ContentHost를 사용하여 실제 텍스트가 표시되도록 함 -->
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                          HorizontalContentAlignment="Center"
+                                          VerticalContentAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 커스텀 DatePicker 스타일 (다크 테마) -->
+        <Style x:Key="CustomDatePickerStyle" TargetType="{x:Type DatePicker}">
+            <!-- 기본 색상 및 여백 설정 -->
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#333333"/>
+            <Setter Property="BorderBrush" Value="#555555"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="MinWidth" Value="220"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type DatePicker}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <!-- 텍스트 입력 영역 -->
+                            <DatePickerTextBox x:Name="PART_TextBox"
+                                               Grid.Column="0"
+                                               Background="{TemplateBinding Background}"
+                                               Foreground="{TemplateBinding Foreground}"
+                                               Padding="{TemplateBinding Padding}"
+                                               BorderBrush="{TemplateBinding BorderBrush}"
+                                               BorderThickness="{TemplateBinding BorderThickness}"/>
+
+                            <!-- 캘린더 팝업 토글 버튼 -->
+                            <Button x:Name="PART_Button"
+                                    Grid.Column="1"
+                                    Focusable="False"
+                                    Content="&#x25BE;"
+                                    Width="30"
+                                    Margin="2,0,0,0">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="OverridesDefaultStyle" Value="True"/>
+                                        <Setter Property="Background" Value="{Binding Background, RelativeSource={RelativeSource AncestorType=DatePicker}}"/>
+                                        <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=DatePicker}}"/>
+                                        <Setter Property="BorderBrush" Value="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=DatePicker}}"/>
+                                        <Setter Property="BorderThickness" Value="{Binding BorderThickness, RelativeSource={RelativeSource AncestorType=DatePicker}}"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border x:Name="border"
+                                                            Background="{TemplateBinding Background}"
+                                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                                            BorderThickness="{TemplateBinding BorderThickness}">    
+                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <!-- Hover 시 Background 변경 -->
+                                                            <Setter TargetName="border" Property="Background" Value="#262626"/>
+                                                            <Setter Property="Foreground" Value="White"/>
+                                                            <Setter Property="Cursor" Value="Hand"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+
+                            <!-- 날짜 선택용 팝업 -->
+                            <Popup x:Name="PART_Popup"
+                                   AllowsTransparency="True"
+                                   Placement="Bottom"
+                                   IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                                   Focusable="False">
+                                <Border x:Name="PART_PopupBorder"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="1"
+                                        SnapsToDevicePixels="True">
+                                    <Calendar x:Name="PART_Calendar"
+                                              Foreground="{TemplateBinding Foreground}"
+                                              Background="{TemplateBinding Background}"/>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <!-- 라디오 버튼 메뉴 -->
+        <Style x:Key="TypeRadioButtonStyle" TargetType="RadioButton">
+            <Setter Property="Background" Value="#494952"/>
+            <Setter Property="Foreground" Value="GhostWhite"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="3"/>
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="5"/>
+                            </Grid.RowDefinitions>
+                            <!-- 실제 콘텐츠 영역 -->
+                            <Border x:Name="ContentBorder" Grid.Row="0" Background="{TemplateBinding Background}" CornerRadius="5">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Margin="{TemplateBinding Padding}"/>
+                            </Border>
+                            <!-- 선택 여부에 따라 색상이 변경되는 표시 영역 -->
+                            <Border x:Name="SelectionIndicator" Grid.Row="1" 
+                                    Background="Transparent"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <!-- 마우스 오버 시 콘텐츠 배경 변경 -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ContentBorder" Property="Background" Value="#2D2D2D"/>
+                            </Trigger>
+                            
+                            <!-- RadioButton이 선택되었을 때 왼쪽 표시 영역 색상 변경 -->
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="SelectionIndicator" Property="Background" Value="DodgerBlue"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <!-- 조회 버튼 -->
+        <Style x:Key="SearchButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#323c69"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="10 3 10 7"/>
+            <!--<Setter Property="Padding" Value="10, 5"/>-->
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="5"
+                                BorderThickness="0"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              RecognizesAccessKey="True"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <!-- 마우스 오버 시 배경색 변경 -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#223377"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <!-- ListBoxItem 스타일 -->
+        <Style x:Key="CustomListBoxItemStyle" TargetType="ListBoxItem">
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="0"
+                                CornerRadius="4">
+                            <ContentPresenter Margin="{TemplateBinding Padding}"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <!-- 마우스 오버 효과 -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#444444"/>
+                            </Trigger>
+                            <!-- 선택 효과 -->
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="DodgerBlue"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <!-- 선택 및 마우스 오버 효과 -->
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsSelected" Value="True"/>
+                                    <Condition Property="IsMouseOver" Value="True"/>
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="Bd" Property="Background" Value="#1E90FF"/>
+                            </MultiTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <!-- ListBox 스타일 -->
+        <Style x:Key="CustomListBoxStyle" TargetType="ListBox">
+            <Setter Property="Background" Value="#333333"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#555555"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="5"/>
+            <!-- ListBox의 항목 (ListContainer)의 스타일 지정 -->
+            <Setter Property="ItemContainerStyle" Value="{StaticResource CustomListBoxItemStyle}"/>
+        </Style>
+
+        <!-- 중복제거 버튼 -->
+        <Style x:Key="DupleCheckStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#2a6940"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Width" Value="75"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="5"
+                                BorderThickness="0"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              RecognizesAccessKey="True"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="Green"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SaveStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#623f8c"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="10, 5"/>
+            <Setter Property="Width" Value="75"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="5"
+                                BorderThickness="0"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              RecognizesAccessKey="True"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="Purple"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        
+        
+    </UserControl.Resources>
+    
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="80"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="80"/>
+            </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="0 10 0 10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="500"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="30"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <DatePicker Style="{StaticResource CustomDatePickerStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0"/>
+                <TextBlock Text="~" Foreground="White" VerticalAlignment="Center" Margin="10" Grid.Column="1"/>
+                <DatePicker Style="{StaticResource CustomDatePickerStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2"/>
+            </Grid>
+            <Grid Grid.Column="1">
+                <Grid Grid.Column="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- 출입 메뉴 버튼 -->
+                    <RadioButton Style="{StaticResource TypeRadioButtonStyle}" GroupName="TypeGroup" Grid.Column="0">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="/ico/door.png" Width="20" Margin="0 0 3 0"/>
+                            <TextBlock Text="출입" FontSize="13"/>
+                        </StackPanel>
+                    </RadioButton>
+                    
+                    <!-- 근태 메뉴 버튼 -->
+                    <RadioButton Style="{StaticResource TypeRadioButtonStyle}" GroupName="TypeGroup" Grid.Column="1">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="/ico/Attendance.png" Width="20" Margin="0 0 3 0"/>
+                            <TextBlock Text="근태" FontSize="13"/>
+                        </StackPanel>
+                    </RadioButton>
+                    
+                    <!-- 식수 메뉴 버튼 -->
+                    <RadioButton Style="{StaticResource TypeRadioButtonStyle}" GroupName="TypeGroup" Grid.Column="2">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="/ico/Restaurant.png" Width="20" Margin="0 0 3 0"/>
+                            <TextBlock Text="식수" FontSize="13"/>
+                        </StackPanel>
+                    </RadioButton>
+                    
+                    <!-- 방범 메뉴 버튼 -->
+                    <RadioButton Style="{StaticResource TypeRadioButtonStyle}" GroupName="TypeGroup" Grid.Column="3">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="/ico/Security.png" Width="20" Margin="0 0 3 0"/>
+                            <TextBlock Text="방범" FontSize="13"/>
+                        </StackPanel>
+                    </RadioButton>
+
+                    <Button Content="조회" Grid.Column="4" Style="{StaticResource SearchButtonStyle}"/>
+                </Grid>
+            </Grid>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <TextBox x:Name="txtSearchBox"
+                         VerticalContentAlignment="Center"
+                         Background="#2D2D2D"
+                         Foreground="White"
+                         BorderThickness="0 0 0 1"
+                         Padding="3"/>
+                <TextBlock Text="&#x2315; 검색"
+                           Foreground="LightGray"
+                           Margin="5,0,0,0"
+                           VerticalAlignment="Center"
+                           IsHitTestVisible="False">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <!-- 기본은 보이지 않음 -->
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <!-- TextBox의 텍스트가 비어있으면 Visible -->
+                                <DataTrigger Binding="{Binding Text, ElementName=txtSearchBox}" Value="">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Grid>
+            <Grid Grid.Row="1">
+                <ListBox  Margin="10" Style="{StaticResource CustomListBoxStyle}">
+                    <ListBoxItem Content="Item 1"/>
+                    <ListBoxItem Content="Item 2"/>
+                    <ListBoxItem Content="Item 3"/>
+                    <ListBoxItem Content="Item 4"/>
+                    <ListBoxItem Content="Item 5"/>
+                </ListBox>
+            </Grid>
+        </Grid>
+            
+        <Grid Grid.Row="2" Margin="10">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="중복제거" Style="{StaticResource DupleCheckStyle}"/>
+                <Button Content="저장" Style="{StaticResource SaveStyle}"/>
+            </StackPanel>
+        </Grid>
     </Grid>
+
+
 </UserControl>

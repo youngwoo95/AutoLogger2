@@ -1,5 +1,6 @@
 ﻿using AutoLoggerV2.Commands;
 using AutoLoggerV2.Services;
+using AutoLoggerV2.Services.Common;
 using System.Windows;
 using System.Windows.Input;
 
@@ -45,13 +46,13 @@ namespace AutoLoggerV2.ViewModels
         /// </summary>
         private void Commit()
         {
-            if (LoginPassword.Equals("stec2025!"))
+            if (LoginPassword.ToLower().Equals(CommDATA.LockPassword))
             {
                 _navigationService.NavigateTo<SettingViewModel>();
             }
             else
             {
-                MessageBox.Show("비밀번호아님");
+                MessageBox.Show("비밀번호가 올바르지 않습니다");
             }
         }
     }
