@@ -427,7 +427,14 @@
                 </TextBlock>
             </Grid>
             <Grid Grid.Row="1">
-                <ListBox  Margin="10" Style="{StaticResource CustomListBoxStyle}" ItemsSource="{Binding QueryList}"/>
+                <ListBox  Margin="10" Style="{StaticResource CustomListBoxStyle}" ItemsSource="{Binding QueryList}">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel VirtualizationMode="Recycling" IsVirtualizing="True"/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                </ListBox>
+
                 <!-- Busy Overlay: IsBusy를 뷰모델의 IsBusy 속성에 바인딩 -->
                 <Grid Background="#AA000000" 
                     Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisConverter}}">
@@ -442,8 +449,8 @@
             
         <Grid Grid.Row="2" Margin="10">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="중복제거" Style="{StaticResource DupleCheckStyle}"/>
-                <Button Content="저장" Style="{StaticResource SaveStyle}"/>
+                <Button Content="중복제거" Style="{StaticResource DupleCheckStyle}" Command="{Binding DupleCommand}"/>
+                <Button Content="저장" Style="{StaticResource SaveStyle}" Command="{Binding SaveCommand}"/>
             </StackPanel>
         </Grid>
     </Grid>

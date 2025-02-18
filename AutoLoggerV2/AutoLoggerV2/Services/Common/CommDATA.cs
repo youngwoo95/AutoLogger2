@@ -18,5 +18,14 @@ namespace AutoLoggerV2.Services.Common
         /// <param name="message"></param>
         public static void ERROR_MESSAGE(string message) => MessageBox.Show(message, "알림", MessageBoxButton.OK, MessageBoxImage.Error);
 
+        /// <summary>
+        /// YES_NO MESSAGE BOX
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public static MessageBoxResult YESNO_MESSAGE(string message) => MessageBox.Show(message, "알림", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+        
+
     }
 }

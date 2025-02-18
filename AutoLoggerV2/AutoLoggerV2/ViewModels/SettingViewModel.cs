@@ -71,10 +71,10 @@ namespace AutoLoggerV2.ViewModels
 
             // 초기화는 숨김
             _showPassword = false;
-            ToggleShowPasswordCommand = new RelayCommand<object>(_ => 
+            ToggleShowPasswordCommand = new RelayCommand<object>(_ =>
             {
-                ShowPassword = !ShowPassword; 
-                
+                ShowPassword = !ShowPassword;
+
             });
             SearchCommand = new RelayCommand<object>(_ => FilePathSearch());
             SaveCommand = new RelayCommand<object>(_ => FileSave()); // 설정파일 저장
@@ -85,20 +85,26 @@ namespace AutoLoggerV2.ViewModels
 
         private void FileLoad()
         {
-            if (File.Exists(AppSettings.SETTINGPATH))
+            try
             {
-                using (StreamReader reader = File.OpenText(AppSettings.SETTINGPATH))
+                if (File.Exists(AppSettings.SETTINGPATH))
                 {
-                    string str = reader.ReadToEnd();
+                    using (StreamReader reader = File.OpenText(AppSettings.SETTINGPATH))
+                    {
+                        string str = reader.ReadToEnd();
 
-                    var jobj = JObject.Parse(str);
-                    FolderPath = (string)jobj["PATH"];
-                    DBIP = (string)jobj["DBIP"];
-                    DBPORT = (string)jobj["DBPORT"];
-                    DBID = (string)jobj["DBID"];
-                    DBPassword = (string)jobj["DBPW"];
-                    DBNAME = (string)jobj["DBNAME"];
+                        var jobj = JObject.Parse(str);
+                        FolderPath = (string)jobj["PATH"];
+                        DBIP = (string)jobj["DBIP"];
+                        DBPORT = (string)jobj["DBPORT"];
+                        DBID = (string)jobj["DBID"];
+                        DBPassword = (string)jobj["DBPW"];
+                        DBNAME = (string)jobj["DBNAME"];
+                    }
                 }
+            }catch(Exception ex)
+            {
+                Loggers.ERRORMessage(ex.ToString());
             }
         }
 
@@ -107,13 +113,19 @@ namespace AutoLoggerV2.ViewModels
         /// </summary>
         private void FilePathSearch()
         {
-            var di = new OpenFolderDialog();
-            if (di.ShowDialog() is true)
+            try
             {
-                FolderPath = di.FolderName;
+                var di = new OpenFolderDialog();
+                if (di.ShowDialog() is true)
+                {
+                    FolderPath = di.FolderName;
 #if DEBUG
-                Console.WriteLine(FolderPath);
+                    Console.WriteLine(FolderPath);
 #endif
+                }
+            }catch(Exception ex)
+            {
+                Loggers.ERRORMessage(ex.ToString());
             }
         }
 
@@ -122,24 +134,31 @@ namespace AutoLoggerV2.ViewModels
         /// </summary>
         private void FileSave()
         {
-            var jobj = new JObject();
-            jobj.Add("PATH", FolderPath);
-            jobj.Add("DBIP", DBIP);
-            jobj.Add("DBPORT", DBPORT);
-            jobj.Add("DBID", DBID);
-            jobj.Add("DBPW", DBPassword);
-            jobj.Add("DBNAME", DBNAME);
-
-            if(!File.Exists(AppSettings.SETTINGPATH))
+            try
             {
-                using (File.Create(AppSettings.SETTINGPATH)) { }
-            }
-            File.WriteAllText(AppSettings.SETTINGPATH, jobj.ToString());
+                var jobj = new JObject();
+                jobj.Add("PATH", FolderPath);
+                jobj.Add("DBIP", DBIP);
+                jobj.Add("DBPORT", DBPORT);
+                jobj.Add("DBID", DBID);
+                jobj.Add("DBPW", DBPassword);
+                jobj.Add("DBNAME", DBNAME);
 
-            CommDATA.OK_MESSAGE("저장이 완료되었습니다");
-            
-            Console.WriteLine($"세팅파일 경로:{AppSettings.SETTINGPATH}");
-            Console.WriteLine($"저장값 : {jobj.ToString()}");
+                if (!File.Exists(AppSettings.SETTINGPATH))
+                {
+                    using (File.Create(AppSettings.SETTINGPATH)) { }
+                }
+                File.WriteAllText(AppSettings.SETTINGPATH, jobj.ToString());
+
+                CommDATA.OK_MESSAGE("저장이 완료되었습니다");
+
+                Console.WriteLine($"세팅파일 경로:{AppSettings.SETTINGPATH}");
+                Console.WriteLine($"저장값 : {jobj.ToString()}");
+            }
+            catch(Exception ex)
+            {
+                Loggers.ERRORMessage(ex.ToString());
+            }
         }
 
         /// <summary>
