@@ -17,7 +17,6 @@ namespace AutoLoggerV2.Services
                 {
                     _currentViewModel = value;
                     CurrentViewModelChanged?.Invoke(this, EventArgs.Empty);
-                    //OnPropertyChanged(nameof(CurrentViewModel));
                     OnPropertyChanged();
                 }
             }

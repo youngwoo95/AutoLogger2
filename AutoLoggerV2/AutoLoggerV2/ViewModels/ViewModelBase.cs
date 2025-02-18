@@ -146,6 +146,20 @@ namespace AutoLoggerV2.ViewModels
         }
         #endregion
 
+        /// <summary>
+        /// 작업종 로딩
+        /// </summary>
+        private bool _isBusy;
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set
+            {
+                _isBusy = value;
+                OnPropertyChanged(nameof(IsBusy));
+            }
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>

@@ -4,11 +4,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:AutoLoggerV2.Views"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d" 
              Background="#292929"
              d:DesignHeight="450" d:DesignWidth="800">
 
     <UserControl.Resources>
+        <!-- BooleanToVisibilityConverter -->
+        <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
+
         <!-- DatePickerTextBox 스타일 오버라이드: 워터마크 제거 및 텍스트 중앙 정렬 -->
         <Style TargetType="{x:Type DatePickerTextBox}">
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -335,9 +339,14 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
-                <DatePicker Style="{StaticResource CustomDatePickerStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0"/>
+                <!-- 시작일 -->
+                <DatePicker Style="{StaticResource CustomDatePickerStyle}"  SelectedDate="{Binding StartDate, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0">
+                    
+                </DatePicker>
+                <!-- 구분자 '~' --> 
                 <TextBlock Text="~" Foreground="White" VerticalAlignment="Center" Margin="10" Grid.Column="1"/>
-                <DatePicker Style="{StaticResource CustomDatePickerStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2"/>
+                <!-- 종료일 -->
+                <DatePicker Style="{StaticResource CustomDatePickerStyle}" SelectedDate="{Binding EndDate, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2"/>
             </Grid>
             <Grid Grid.Column="1">
                 <Grid Grid.Column="1">
@@ -350,7 +359,7 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- 출입 메뉴 버튼 -->
-                    <RadioButton Style="{StaticResource TypeRadioButtonStyle}" GroupName="TypeGroup" Grid.Column="0">
+                    <RadioButton Style="{StaticResource TypeRadioButtonStyle}" GroupName="TypeGroup" Grid.Column="0" Command="{Binding EnterCommand}">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="/ico/door.png" Width="20" Margin="0 0 3 0"/>
                             <TextBlock Text="출입" FontSize="13"/>
@@ -358,7 +367,7 @@
                     </RadioButton>
                     
                     <!-- 근태 메뉴 버튼 -->
-                    <RadioButton Style="{StaticResource TypeRadioButtonStyle}" GroupName="TypeGroup" Grid.Column="1">
+                    <RadioButton Style="{StaticResource TypeRadioButtonStyle}" GroupName="TypeGroup" Grid.Column="1" Command="{Binding AttendanceCommand}">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="/ico/Attendance.png" Width="20" Margin="0 0 3 0"/>
                             <TextBlock Text="근태" FontSize="13"/>
@@ -366,7 +375,7 @@
                     </RadioButton>
                     
                     <!-- 식수 메뉴 버튼 -->
-                    <RadioButton Style="{StaticResource TypeRadioButtonStyle}" GroupName="TypeGroup" Grid.Column="2">
+                    <RadioButton Style="{StaticResource TypeRadioButtonStyle}" GroupName="TypeGroup" Grid.Column="2" Command="{Binding RestaurantCommand}">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="/ico/Restaurant.png" Width="20" Margin="0 0 3 0"/>
                             <TextBlock Text="식수" FontSize="13"/>
@@ -374,14 +383,14 @@
                     </RadioButton>
                     
                     <!-- 방범 메뉴 버튼 -->
-                    <RadioButton Style="{StaticResource TypeRadioButtonStyle}" GroupName="TypeGroup" Grid.Column="3">
+                    <RadioButton Style="{StaticResource TypeRadioButtonStyle}" GroupName="TypeGroup" Grid.Column="3" Command="{Binding SecurityCommand}">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="/ico/Security.png" Width="20" Margin="0 0 3 0"/>
                             <TextBlock Text="방범" FontSize="13"/>
                         </StackPanel>
                     </RadioButton>
 
-                    <Button Content="조회" Grid.Column="4" Style="{StaticResource SearchButtonStyle}"/>
+                    <Button Content="조회" Grid.Column="4" Style="{StaticResource SearchButtonStyle}" Command="{Binding SearchCommand}"/>
                 </Grid>
             </Grid>
         </Grid>
@@ -392,6 +401,7 @@
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
                 <TextBox x:Name="txtSearchBox"
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                          VerticalContentAlignment="Center"
                          Background="#2D2D2D"
                          Foreground="White"
@@ -417,13 +427,16 @@
                 </TextBlock>
             </Grid>
             <Grid Grid.Row="1">
-                <ListBox  Margin="10" Style="{StaticResource CustomListBoxStyle}">
-                    <ListBoxItem Content="Item 1"/>
-                    <ListBoxItem Content="Item 2"/>
-                    <ListBoxItem Content="Item 3"/>
-                    <ListBoxItem Content="Item 4"/>
-                    <ListBoxItem Content="Item 5"/>
-                </ListBox>
+                <ListBox  Margin="10" Style="{StaticResource CustomListBoxStyle}" ItemsSource="{Binding QueryList}"/>
+                <!-- Busy Overlay: IsBusy를 뷰모델의 IsBusy 속성에 바인딩 -->
+                <Grid Background="#AA000000" 
+                    Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisConverter}}">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
+                        <!-- MahApps.Metro ProgressRing -->
+                        <controls:ProgressRing Width="50" Height="50" IsActive="True" Foreground="DodgerBlue"/>
+                        <TextBlock Text="처리중..." Foreground="White" FontSize="16" Margin="0,10,0,0" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Grid>
             </Grid>
         </Grid>
             
