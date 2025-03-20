@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35506.116 d17.12
+VisualStudioVersion = 17.12.35506.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoLoggerV2", "AutoLoggerV2\AutoLoggerV2.csproj", "{1A008C16-8B3F-452D-A1BB-12A86388C5EA}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "AutoLoggerv02", "AutoLoggerv02\AutoLoggerv02.vdproj", "{5E9414BB-9B0C-4E67-B21B-7E7CF3F7F5F8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,8 @@ Global
 		{1A008C16-8B3F-452D-A1BB-12A86388C5EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A008C16-8B3F-452D-A1BB-12A86388C5EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A008C16-8B3F-452D-A1BB-12A86388C5EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E9414BB-9B0C-4E67-B21B-7E7CF3F7F5F8}.Debug|Any CPU.ActiveCfg = Debug
+		{5E9414BB-9B0C-4E67-B21B-7E7CF3F7F5F8}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

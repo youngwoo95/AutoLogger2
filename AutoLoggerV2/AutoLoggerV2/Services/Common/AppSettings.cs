@@ -9,7 +9,7 @@ namespace AutoLoggerV2.Services.Common
         /// </summary>
         public string ROOT => AppDomain.CurrentDomain.BaseDirectory;
 
-        public string SETTINGPATH => $"{ROOT}\\Settings.json";
+        public string SETTINGPATH => $"{AppDomain.CurrentDomain.BaseDirectory}\\Settings.json";
 
         
     }

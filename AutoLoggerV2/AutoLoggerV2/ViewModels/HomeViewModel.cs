@@ -182,27 +182,33 @@ namespace AutoLoggerV2.ViewModels
         public HomeViewModel(IAppSettings _appsettings,
             ILoggers _loggers)
         {
-            this.AppSettings = _appsettings;
-            this.Loggers = _loggers;
-            FileLoad();  // Setting File Load
+            try
+            {
+                this.AppSettings = _appsettings;
+                this.Loggers = _loggers;
+                FileLoad();  // Setting File Load
 
-            connStr = $"Data Source=(DESCRIPTION=(ADDRESS = (PROTOCOL = TCP)(HOST = {DBIP})(PORT = {DBPORT})) (CONNECT_DATA=(SERVER = DBDICATED) (SERVICE_NAME = {DBNAME})));User Id={DBID};Password={DBPassword};Pooling=true;Min Pool Size=5;Connection Lifetime=120;Validate Connection=true;";
+                connStr = $"Data Source=(DESCRIPTION=(ADDRESS = (PROTOCOL = TCP)(HOST = {DBIP})(PORT = {DBPORT})) (CONNECT_DATA=(SERVER = DBDICATED) (SERVICE_NAME = {DBNAME})));User Id={DBID};Password={DBPassword};Pooling=true;Min Pool Size=5;Connection Lifetime=120;Validate Connection=true;";
 
 
-            StartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0); // 시작일 default
-            EndDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0); // 종료일 default
+                StartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0); // 시작일 default
+                EndDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0); // 종료일 default
 
-            EnterCommand = new RelayCommand<object>(_ => MenuType = 1); // 출입
-            AttendanceCommand = new RelayCommand<object>(_ => MenuType = 2); // 근태
-            RestaurantCommand = new RelayCommand<object>(_ => MenuType = 3); // 식수
-            SecurityCommand = new RelayCommand<object>(_ => MenuType = 4); // 방범
+                EnterCommand = new RelayCommand<object>(_ => MenuType = 1); // 출입
+                AttendanceCommand = new RelayCommand<object>(_ => MenuType = 2); // 근태
+                RestaurantCommand = new RelayCommand<object>(_ => MenuType = 3); // 식수
+                SecurityCommand = new RelayCommand<object>(_ => MenuType = 4); // 방범
 
-            SearchCommand = new RelayCommand<object>(async _ => await GetLogFileSearch());
+                SearchCommand = new RelayCommand<object>(async _ => await GetLogFileSearch());
 
-            DupleCommand = new RelayCommand<object>(_ => RemoveDuple()); // 중복제거
-            SaveCommand = new RelayCommand<object>(async _ => await Save()); // 저장
+                DupleCommand = new RelayCommand<object>(_ => RemoveDuple()); // 중복제거
+                SaveCommand = new RelayCommand<object>(async _ => await Save()); // 저장
 
-            Console.WriteLine(typeof(HomeViewModel));
+                Console.WriteLine(typeof(HomeViewModel));
+            }catch(Exception ex)
+            {
+                Loggers.ERRORMessage(ex.ToString());
+            }
         }
 
         /// <summary>
@@ -907,7 +913,7 @@ namespace AutoLoggerV2.ViewModels
 
                         // 근태
                         case 2:
-                            var AttendanceResult = await Task.Run(() =>
+                            AttendanceResult = await Task.Run(() =>
                             {
                                 // 여기서 전체 데이터 처리 작업을 수행합니다.
                                 var result = LogConverterData
@@ -1051,7 +1057,7 @@ namespace AutoLoggerV2.ViewModels
                                     RAN = m.RAN,
                                     M_CODE = m.M_CODE,
                                     LCC = m.LCC,
-                                    MC = m.MC,
+                                    MC = m.MC.Substring(0, 9),
                                     SC = m.SC,
                                     COMMAND = m.COMMAND,
                                     MSG = m.MSG,

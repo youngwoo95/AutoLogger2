@@ -4,8 +4,6 @@ using AutoLoggerV2.Services.Logger;
 using AutoLoggerV2.ViewModels;
 using AutoLoggerV2.Views;
 using Microsoft.Extensions.DependencyInjection;
-using System.Configuration;
-using System.Data;
 using System.Windows;
 
 namespace AutoLoggerV2

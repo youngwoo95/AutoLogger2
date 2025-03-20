@@ -10,13 +10,31 @@ namespace AutoLoggerV2.Services.Common
         /// OK MESSAGE
         /// </summary>
         /// <param name="message">내용</param>
-        public static void OK_MESSAGE(string message) => MessageBox.Show(message, "알림", MessageBoxButton.OK, MessageBoxImage.Information);
-        
+        public static void OK_MESSAGE(string message)
+        {
+            try
+            {
+                MessageBox.Show(message, "알림", MessageBoxButton.OK, MessageBoxImage.Information);
+            }catch(Exception ex)
+            {
+                throw;
+            }
+        }
+
         /// <summary>
         /// ERROR MESSAGE
         /// </summary>
         /// <param name="message"></param>
-        public static void ERROR_MESSAGE(string message) => MessageBox.Show(message, "알림", MessageBoxButton.OK, MessageBoxImage.Error);
+        public static void ERROR_MESSAGE(string message)
+        {
+            try
+            {
+                MessageBox.Show(message, "알림", MessageBoxButton.OK, MessageBoxImage.Error);
+            }catch(Exception ex)
+            {
+                throw;
+            }
+        }
 
         /// <summary>
         /// YES_NO MESSAGE BOX

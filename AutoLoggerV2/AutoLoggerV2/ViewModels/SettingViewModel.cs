@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using Oracle.ManagedDataAccess.Client;
 using System.Diagnostics;
 using System.IO;
+using System.Windows;
 using System.Windows.Input;
 
 namespace AutoLoggerV2.ViewModels
@@ -64,23 +65,30 @@ namespace AutoLoggerV2.ViewModels
 
         public SettingViewModel(IAppSettings _appSettings, ILoggers _loggers)
         {
-            this.AppSettings = _appSettings;
-            this.Loggers = _loggers;
-
-            FileLoad();
-
-            // 초기화는 숨김
-            _showPassword = false;
-            ToggleShowPasswordCommand = new RelayCommand<object>(_ =>
+            try
             {
-                ShowPassword = !ShowPassword;
+                this.Loggers = _loggers;
+                this.AppSettings = _appSettings;
 
-            });
-            SearchCommand = new RelayCommand<object>(_ => FilePathSearch());
-            SaveCommand = new RelayCommand<object>(_ => FileSave()); // 설정파일 저장
-            ConnCheckCommand = new RelayCommand<object>(async _ => await ConnCheck()); // 연결확인
+                FileLoad();
 
-            Debug.WriteLine(typeof(SettingViewModel));
+                // 초기화는 숨김
+                _showPassword = false;
+                ToggleShowPasswordCommand = new RelayCommand<object>(_ =>
+                {
+                    ShowPassword = !ShowPassword;
+
+                });
+                SearchCommand = new RelayCommand<object>(_ => FilePathSearch());
+                SaveCommand = new RelayCommand<object>(_ => FileSave()); // 설정파일 저장
+                ConnCheckCommand = new RelayCommand<object>(async _ => await ConnCheck()); // 연결확인
+
+                Debug.WriteLine(typeof(SettingViewModel));
+            }
+            catch(Exception ex)
+            {
+                Loggers.ERRORMessage(ex.ToString());
+            }
         }
 
         private void FileLoad()
@@ -150,7 +158,9 @@ namespace AutoLoggerV2.ViewModels
                 }
                 File.WriteAllText(AppSettings.SETTINGPATH, jobj.ToString());
 
-                CommDATA.OK_MESSAGE("저장이 완료되었습니다");
+
+                MessageBox.Show("저장이 완료되었습니다.");
+                //CommDATA.OK_MESSAGE("저장이 완료되었습니다");
 
                 Console.WriteLine($"세팅파일 경로:{AppSettings.SETTINGPATH}");
                 Console.WriteLine($"저장값 : {jobj.ToString()}");
@@ -173,11 +183,13 @@ namespace AutoLoggerV2.ViewModels
                 try
                 {
                     await conn.OpenAsync();
+                    MessageBox.Show("데이터베이스 연결성공", "알림", MessageBoxButton.OK, MessageBoxImage.Information);
                     await Loggers.INFOMEssage($"데이터베이스 연결성공 {connStr}");
                 }
                 catch(Exception ex)
                 {
                     await Loggers.ERRORMessage($"데이터베이스 연결실패 {ex.ToString()}");
+                    MessageBox.Show("데이터베이스 연결실패", "알림", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }

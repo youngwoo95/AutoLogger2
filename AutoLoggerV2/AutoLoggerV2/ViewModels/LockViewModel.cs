@@ -1,6 +1,7 @@
 ﻿using AutoLoggerV2.Commands;
 using AutoLoggerV2.Services;
 using AutoLoggerV2.Services.Common;
+using AutoLoggerV2.Services.Logger;
 using System.Windows;
 using System.Windows.Input;
 
@@ -9,7 +10,7 @@ namespace AutoLoggerV2.ViewModels
     public class LockViewModel : ViewModelBase
     {
         private readonly INavigationService _navigationService;
-
+        private readonly ILoggers Loggers;
         private string loginPassword;
         public string LoginPassword
         {
@@ -28,17 +29,26 @@ namespace AutoLoggerV2.ViewModels
         public ICommand CancelCommand { get; }
 
         
-        public LockViewModel(INavigationService navigationService)
+        public LockViewModel(INavigationService navigationService, ILoggers _loggers)
         {
-            _navigationService = navigationService;
-
-
-            SubmitCommand = new RelayCommand<object>(_ => Commit());
-            CancelCommand = new RelayCommand<object>(_ =>
+            try
             {
-                // 전역 NavigationService를 통해 HomeViewModel로 전환
-                _navigationService.NavigateTo<HomeViewModel>();
-            });
+                _navigationService = navigationService;
+
+                this.Loggers = _loggers;
+
+                SubmitCommand = new RelayCommand<object>(_ => Commit());
+                CancelCommand = new RelayCommand<object>(_ =>
+                {
+                    // 전역 NavigationService를 통해 HomeViewModel로 전환
+                    _navigationService.NavigateTo<HomeViewModel>();
+
+                });
+
+            }catch(Exception ex)
+            {
+                Loggers.ERRORMessage(ex.ToString());
+            }
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using AutoLoggerV2.Commands;
 using AutoLoggerV2.Services;
+using AutoLoggerV2.Services.Logger;
 using System.Windows.Input;
 
 namespace AutoLoggerV2.ViewModels
@@ -33,43 +34,58 @@ namespace AutoLoggerV2.ViewModels
             }
         }
 
+        private readonly ILoggers Loggers;
         public INavigationService NavigationService { get; }
-        public MainViewModel(INavigationService navigationService)
+        public MainViewModel(INavigationService navigationService, ILoggers _loggers)
         {
-            NavigationService = navigationService;
-            NavigationService.CurrentViewModelChanged += OnCurrentViewModelChanged;
-
-            // 예시: ShowHomeCommand도 추가 가능
-            ShowHomeCommand = new RelayCommand<object>(_ =>
+            try
             {
-                NavigationService.NavigateTo<HomeViewModel>();
-            });
+                this.Loggers = _loggers;
 
-            ShowLockCommand = new RelayCommand<object>(_ =>
+                NavigationService = navigationService;
+                NavigationService.CurrentViewModelChanged += OnCurrentViewModelChanged;
+
+                // 예시: ShowHomeCommand도 추가 가능
+                ShowHomeCommand = new RelayCommand<object>(_ =>
+                {
+                    NavigationService.NavigateTo<HomeViewModel>();
+                });
+
+                ShowLockCommand = new RelayCommand<object>(_ =>
+                {
+                    NavigationService.NavigateTo<LockViewModel>();
+                });
+
+                IsHomeSelected = true;
+            }catch(Exception ex)
             {
-                NavigationService.NavigateTo<LockViewModel>();
-            });
-
-            IsHomeSelected = true;
+                Loggers.ERRORMessage(ex.ToString());
+            }
         }
 
 
         private void OnCurrentViewModelChanged(object sender, EventArgs e)
         {
-            // 화면 전환에 따라 선택 상태를 업데이트
-            if (NavigationService.CurrentViewModel is HomeViewModel)
+            try
             {
-                IsHomeSelected = true;
-                IsLockSelected = false;
-            }
-            else if (NavigationService.CurrentViewModel is LockViewModel)
-            {
-                IsHomeSelected = false;
-                IsLockSelected = true;
-            }
+                // 화면 전환에 따라 선택 상태를 업데이트
+                if (NavigationService.CurrentViewModel is HomeViewModel)
+                {
+                    IsHomeSelected = true;
+                    IsLockSelected = false;
+                }
+                else if (NavigationService.CurrentViewModel is LockViewModel)
+                {
+                    IsHomeSelected = false;
+                    IsLockSelected = true;
+                }
 
-            // ContentControl 바인딩 갱신
-            OnPropertyChanged(nameof(CurrentViewModel));
+                // ContentControl 바인딩 갱신
+                OnPropertyChanged(nameof(CurrentViewModel));
+            }catch(Exception ex)
+            {
+                Loggers.ERRORMessage(ex.ToString());
+            }
         }
 
     }

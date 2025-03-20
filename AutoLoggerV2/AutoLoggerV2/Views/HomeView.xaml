@@ -367,7 +367,7 @@
                     </RadioButton>
                     
                     <!-- 근태 메뉴 버튼 -->
-                    <RadioButton Style="{StaticResource TypeRadioButtonStyle}" GroupName="TypeGroup" Grid.Column="1" Command="{Binding AttendanceCommand}">
+                    <RadioButton Style="{StaticResource TypeRadioButtonStyle}" GroupName="TypeGroup" Grid.Column="1" Command="{Binding AttendanceCommand}" Cursor="Hand">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="/ico/Attendance.png" Width="20" Margin="0 0 3 0"/>
                             <TextBlock Text="근태" FontSize="13"/>
